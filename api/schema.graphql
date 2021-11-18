@@ -1,0 +1,68 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+}
+
+type Album {
+    artists: [Artist]!
+    catalog: String
+    id: ID!
+    parent: String!
+    releaseDate: Date!
+    subtitle: String
+    titleNat: String!
+    titleRom: String
+}
+
+type Artist {
+    id: String!
+    members: [Member]!
+    nameNat: String
+    nameRom: String
+}
+
+type Member {
+    firstNameNat: String!
+    firstNameRom: String
+    foreignNameOrder: Boolean!
+    id: String!
+    lastNameNat: String!
+    lastNameRom: String
+}
+
+type Query {
+    findAlbumByCatalog: Album
+    findAlbumById: Album
+    findAlbumsByArtist(artistId: String!): [Album]
+    findAlbumsByDate(since: Int, until: Int): [Album]
+    findAlbumsByName(name: String!): [Album]
+    findAlbumsByParent(parent: String!): [Album]
+    findSongsByArtist(artistId: String!, includeInstrumental: Boolean = false, includeRadioDrama: Boolean = false): [Song]
+    findSongsByName(includeInstrumental: Boolean = false, includeRadioDrama: Boolean = false, name: String!): [Song]
+    getAlbumById(id: String!): Album
+    getAllAlbums: [Album]
+    getAllArtists: [Artist]
+    getAllMembers: [Member]
+    getAllSongs: [Song]
+    getAllSongsInAlbum(albumId: String!): [Song]
+    getArtistById(id: String!): Artist
+    getMemberById(id: String!): Member
+    getSongById(id: String!): Song
+}
+
+type Song {
+    albumOrder: Int!
+    artists: [Artist]
+    id: String!
+    inAlbum: Album!
+    isInstrumental: Boolean!
+    isRadioDrama: Boolean!
+    length: Int!
+    titleNat: String
+    titleRom: String
+}
+
+
+"Date scalar type"
+scalar Date
