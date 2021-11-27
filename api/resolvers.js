@@ -10,12 +10,17 @@ export const resolvers = {
         getAllArtists: async (parent, args) => {
             return artistModel.find()
         },
+
+        // Has Pagination, and Limits
         getAllAlbums: async (parent, args) => {
-            return albumModel.find().sort({ releaseDate: args.sort? 1 : -1 }).limit(args.limit)
+            const cursor = albumModel.find().sort({ releaseDate: args.sort? 1 : -1 , _id: 1 })
+            return implementLimitAndPagination(cursor, args)
         },
         getAllSongs: async (parent, args) => {
-            return songModel.find()
+            const cursor = songModel.find().sort({ releaseDate: args.sort? 1 : -1, _id: 1 })
+            return implementLimitAndPagination(cursor, args)
         },
+
         getAllSongsInAlbum: async (parent, args) => {
             return songModel.find({ albumId: args.albumId }).sort({ albumOrder: 1 })
         },
@@ -47,7 +52,8 @@ export const resolvers = {
                     { isRadioDrama: args.includeRadioDrama? { $exists: true } : false }
                 ]
             }
-            return songModel.find(filter).sort({releaseDate: args.sort? 1 : -1}).limit(args.limit);
+            const cursor = songModel.find(filter).sort({releaseDate: args.sort? 1 : -1})
+            return implementLimitAndPagination(cursor, args)
         },
 
         findSongsByArtist: async (parent, args) => {
@@ -60,10 +66,19 @@ export const resolvers = {
             }
             let songArray = await songModel.find(songFilter).populate('albumId')
             songArray.sort((first, second) => {
-                return ((args.sort? 1 : -1)*Number(first.albumId.releaseDate) + (args.sort? -1 : 1)*Number(second.albumId.releaseDate))
+                return ((args.sort? 1 : -1) * Number(first.albumId.releaseDate) + (args.sort? -1 : 1) * Number(second.albumId.releaseDate))
             })
-            return songArray.slice(0, args.limit)
+            if (args.limit !== 0) {
+                return songArray.slice(0, args.limit)
+            } else if (args.page !== 0 && args.pageLimit !== 0) {
+                return songArray.slice((args.page - 1) * args.pageLimit, args.page * args.pageLimit)
+            } else {
+                return songArray
+            }
         },
+
+        // TODO: findAlbumsByName (Paginated, Limited)
+        // TODO: findAlbumsByArtist (Paginated, Limited)
     },
     Artist: {
         members: async (parent) => {
@@ -114,5 +129,15 @@ const getArtists = (parent) => {
         return artist_array
     } else {
         return []
+    }
+}
+
+const implementLimitAndPagination = (cursor, args) => {
+    if (args.limit !== 0) {
+        return cursor.limit(args.limit)
+    } else if (args.page !== 0 && args.pageLimit !== 0) {
+        return cursor.skip((args.page - 1) * args.pageLimit).limit(args.pageLimit)
+    } else {
+        return cursor
     }
 }

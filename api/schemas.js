@@ -47,9 +47,21 @@ export const typeDefs = gql`
     type Query {
         getAllMembers: [Member]
         getAllArtists: [Artist]
-        getAllSongs: [Song]
+        getAllSongs (
+            sort: Boolean = true,
+            limit: Int = 0,
+            page: Int = 0,
+            pageLimit: Int = 0
+        ): [Song]
+        
+        getAllAlbums (
+            sort: Boolean = true, 
+            limit: Int = 0,
+            page: Int = 0,
+            pageLimit: Int = 0
+        ): [Album]
+        
         getAllSongsInAlbum(albumId: String!): [Song]
-        getAllAlbums (sort: Boolean = true, limit: Int = 0) : [Album]
         
         getMemberById(id: String!): Member
         getArtistById(id: String!): Artist
@@ -61,7 +73,9 @@ export const typeDefs = gql`
             includeInstrumental: Boolean = false,
             includeRadioDrama: Boolean = false,
             sort: Boolean = true,
-            limit: Int = 0
+            limit: Int = 0,
+            page: Int = 0,
+            pageLimit: Int = 0
         ): [Song]
         
         findSongsByArtist(
@@ -69,38 +83,44 @@ export const typeDefs = gql`
             includeInstrumental: Boolean = false,
             includeRadioDrama: Boolean = false,
             sort: Boolean = true,
-            limit: Int = 0
+            limit: Int = 0,
+            page: Int = 0,
+            pageLimit: Int = 0
         ): [Song]
         
         findAlbumsByName(
             name: String!,
             sort: Boolean = true,
-            limit: Int = 0
+            limit: Int = 0,
+            page: Int = 0,
+            pageLimit: Int = 0
         ): [Album]
         
         findAlbumsByArtist(
             artistId: String!,
             sort: Boolean = true,
-            limit: Int = 0
+            limit: Int = 0,
+            page: Int = 0,
+            pageLimit: Int = 0
         ): [Album]
         
-        findAlbumsByDate(
-            since: Int, until: Int,
-            sort: Boolean = true,
-            limit: Int = 0
-        ): [Album]
-        
-        findAlbumsByParent(
-            parent: String!,
-            sort: Boolean = true,
-            limit: Int = 0
-        ): [Album]
-        
-        findAlbumByCatalog(
-            catalog: String!,
-            sort: Boolean = true,
-            limit: Int = 0
-        ): Album
+#        findAlbumsByDate(
+#            since: Int, until: Int,
+#            sort: Boolean = true,
+#            limit: Int = 0
+#        ): [Album]
+#        
+#        findAlbumsByParent(
+#            parent: String!,
+#            sort: Boolean = true,
+#            limit: Int = 0
+#        ): [Album]
+#        
+#        findAlbumByCatalog(
+#            catalog: String!,
+#            sort: Boolean = true,
+#            limit: Int = 0
+#        ): Album
     }
 `
 
