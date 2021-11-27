@@ -4,20 +4,20 @@ import { dateScalar } from "./schemas.js";
 export const resolvers = {
     Date: dateScalar,
     Query: {
-        getAllMembers: async () => {
+        getAllMembers: async (parent, args) => {
             return memberModel.find()
         },
-        getAllArtists: async () => {
+        getAllArtists: async (parent, args) => {
             return artistModel.find()
         },
-        getAllAlbums: async () => {
-            return albumModel.find()
+        getAllAlbums: async (parent, args) => {
+            return albumModel.find().sort({ releaseDate: args.sort? 1 : -1 }).limit(args.limit)
         },
-        getAllSongs: async () => {
+        getAllSongs: async (parent, args) => {
             return songModel.find()
         },
         getAllSongsInAlbum: async (parent, args) => {
-            return songModel.find({ albumId: args.albumId })
+            return songModel.find({ albumId: args.albumId }).sort({ albumOrder: 1 })
         },
 
         getMemberById: async (parent, args) => {
@@ -47,12 +47,10 @@ export const resolvers = {
                     { isRadioDrama: args.includeRadioDrama? { $exists: true } : false }
                 ]
             }
-            return songModel.find(filter);
+            return songModel.find(filter).sort({releaseDate: args.sort? 1 : -1}).limit(args.limit);
         },
+
         findSongsByArtist: async (parent, args) => {
-            const albumFilter = {
-                artists: args.artistId
-            }
             const songFilter = {
                 $and: [
                     { artists: args.artistId },
@@ -60,21 +58,11 @@ export const resolvers = {
                     { isRadioDrama: args.includeRadioDrama? { $exists: true } : false }
                 ]
             }
-            let albumArray = await albumModel.find(albumFilter);
-            let songArray = await songModel.find(songFilter);
-            for (let album of albumArray) {
-                let songFilterFromAlbum = {
-                    $and: [
-                        { albumId: album._id },
-                        { artists: null },
-                        { isInstrumental: args.includeInstrumental ? { $exists: true } : false },
-                        { isRadioDrama: args.includeRadioDrama? { $exists: true } : false }
-                    ]
-                }
-                let songs = await songModel.find(songFilterFromAlbum);
-                songs.forEach(song => songArray.push(song));
-            }
-            return songArray;
+            let songArray = await songModel.find(songFilter).populate('albumId')
+            songArray.sort((first, second) => {
+                return ((args.sort? 1 : -1)*Number(first.albumId.releaseDate) + (args.sort? -1 : 1)*Number(second.albumId.releaseDate))
+            })
+            return songArray.slice(0, args.limit)
         },
     },
     Artist: {

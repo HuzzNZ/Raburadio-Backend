@@ -5,7 +5,7 @@ import {memberSchema} from "./schemas/member.js";
 import {songSchema} from "./schemas/song.js";
 import {ENV} from "./config/config.js";
 
-mongoose.connect(ENV.mongoURL).then(r => console.log("Connected to the DB"));
+mongoose.connect(ENV.mongoURL).then(() => console.log("Connected to the DB"));
 
 const albumModel = mongoose.model('Album', albumSchema)
 const artistModel = mongoose.model('Artist', artistSchema)

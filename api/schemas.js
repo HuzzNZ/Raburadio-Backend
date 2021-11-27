@@ -3,7 +3,7 @@ import { Kind, GraphQLScalarType } from "graphql";
 
 export const typeDefs = gql`
     scalar Date
-
+    
     type Member {
         id: String!
         firstNameNat: String!
@@ -33,7 +33,7 @@ export const typeDefs = gql`
     }
 
     type Album {
-        id: ID!
+        id: String!
         titleNat: String!
         titleRom: String
         songs: [Song]
@@ -49,7 +49,7 @@ export const typeDefs = gql`
         getAllArtists: [Artist]
         getAllSongs: [Song]
         getAllSongsInAlbum(albumId: String!): [Song]
-        getAllAlbums: [Album]
+        getAllAlbums (sort: Boolean = true, limit: Int = 0) : [Album]
         
         getMemberById(id: String!): Member
         getArtistById(id: String!): Artist
@@ -59,18 +59,48 @@ export const typeDefs = gql`
         findSongsByName(
             name: String!,
             includeInstrumental: Boolean = false,
-            includeRadioDrama: Boolean = false): [Song]
+            includeRadioDrama: Boolean = false,
+            sort: Boolean = true,
+            limit: Int = 0
+        ): [Song]
+        
         findSongsByArtist(
             artistId: String!,
             includeInstrumental: Boolean = false,
-            includeRadioDrama: Boolean = false): [Song]
+            includeRadioDrama: Boolean = false,
+            sort: Boolean = true,
+            limit: Int = 0
+        ): [Song]
         
-        findAlbumsByName(name: String!): [Album]
-        findAlbumsByArtist(artistId: String!): [Album]
-        findAlbumsByDate(since: Int, until: Int): [Album]
-        findAlbumsByParent(parent: String!): [Album]
-        findAlbumByCatalog: Album
-        findAlbumById: Album
+        findAlbumsByName(
+            name: String!,
+            sort: Boolean = true,
+            limit: Int = 0
+        ): [Album]
+        
+        findAlbumsByArtist(
+            artistId: String!,
+            sort: Boolean = true,
+            limit: Int = 0
+        ): [Album]
+        
+        findAlbumsByDate(
+            since: Int, until: Int,
+            sort: Boolean = true,
+            limit: Int = 0
+        ): [Album]
+        
+        findAlbumsByParent(
+            parent: String!,
+            sort: Boolean = true,
+            limit: Int = 0
+        ): [Album]
+        
+        findAlbumByCatalog(
+            catalog: String!,
+            sort: Boolean = true,
+            limit: Int = 0
+        ): Album
     }
 `
 
