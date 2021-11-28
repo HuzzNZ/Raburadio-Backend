@@ -47,12 +47,20 @@ export const typeDefs = gql`
     type Query {
         getAllMembers: [Member]
         getAllArtists: [Artist]
+        
         getAllSongs (
+            includeInstrumental: Boolean = false,
+            includeRadioDrama: Boolean = false,
             sort: Boolean = true,
             limit: Int = 0,
             page: Int = 0,
             pageLimit: Int = 0
         ): [Song]
+        
+        getAllSongsCount (
+            includeInstrumental: Boolean = false,
+            includeRadioDrama: Boolean = false): Int
+        
         
         getAllAlbums (
             sort: Boolean = true, 
@@ -60,6 +68,9 @@ export const typeDefs = gql`
             page: Int = 0,
             pageLimit: Int = 0
         ): [Album]
+
+        getAllAlbumsCount: Int
+        
         
         getAllSongsInAlbum(albumId: String!): [Song]
         
@@ -68,7 +79,7 @@ export const typeDefs = gql`
         getAlbumById(id: String!): Album
         getSongById(id: String!): Song
         
-        findSongsByName(
+        findSongsByName (
             name: String!,
             includeInstrumental: Boolean = false,
             includeRadioDrama: Boolean = false,
@@ -78,7 +89,11 @@ export const typeDefs = gql`
             pageLimit: Int = 0
         ): [Song]
         
-        findSongsByArtist(
+        findSongsByNameCount (name: String!,
+            includeInstrumental: Boolean = false,
+            includeRadioDrama: Boolean = false): Int
+        
+        findSongsByArtist (
             artistId: String!,
             includeInstrumental: Boolean = false,
             includeRadioDrama: Boolean = false,
@@ -88,7 +103,11 @@ export const typeDefs = gql`
             pageLimit: Int = 0
         ): [Song]
         
-        findAlbumsByName(
+        findSongsByArtistCount (artistId: String!,
+            includeInstrumental: Boolean = false,
+            includeRadioDrama: Boolean = false): Int
+        
+        findAlbumsByName (
             name: String!,
             sort: Boolean = true,
             limit: Int = 0,
@@ -96,13 +115,17 @@ export const typeDefs = gql`
             pageLimit: Int = 0
         ): [Album]
         
-        findAlbumsByArtist(
+        findAlbumsByNameCount (name: String!): Int
+        
+        findAlbumsByArtist (
             artistId: String!,
             sort: Boolean = true,
             limit: Int = 0,
             page: Int = 0,
             pageLimit: Int = 0
         ): [Album]
+        
+        findAlbumsByArtistCount (artistId: String!): Int
         
 #        findAlbumsByDate(
 #            since: Int, until: Int,

@@ -16,9 +16,26 @@ export const resolvers = {
             const cursor = albumModel.find().sort({ releaseDate: args.sort? 1 : -1 , _id: 1 })
             return implementLimitAndPagination(cursor, args)
         },
+        getAllAlbumsCount: async (parent, args) => {
+            return albumModel.countDocuments({})
+        },
+
         getAllSongs: async (parent, args) => {
-            const cursor = songModel.find().sort({ releaseDate: args.sort? 1 : -1, _id: 1 })
+            const cursor = songModel.find({
+                $and: [
+                    { isInstrumental: args.includeInstrumental? { $exists: true } : false },
+                    { isRadioDrama: args.includeRadioDrama? { $exists: true } : false }
+                ]
+            }).sort({ releaseDate: args.sort? 1 : -1, _id: 1 })
             return implementLimitAndPagination(cursor, args)
+        },
+        getAllSongsCount: async (parent, args) => {
+            return songModel.countDocuments({
+                $and: [
+                    { isInstrumental: args.includeInstrumental? { $exists: true } : false },
+                    { isRadioDrama: args.includeRadioDrama? { $exists: true } : false }
+                ]
+            })
         },
 
         getAllSongsInAlbum: async (parent, args) => {
@@ -55,6 +72,7 @@ export const resolvers = {
             const cursor = songModel.find(filter).sort({releaseDate: args.sort? 1 : -1})
             return implementLimitAndPagination(cursor, args)
         },
+        // TODO: Count Above
 
         findSongsByArtist: async (parent, args) => {
             const songFilter = {
@@ -76,6 +94,7 @@ export const resolvers = {
                 return songArray
             }
         },
+        // TODO: Count Above
 
         // TODO: findAlbumsByName (Paginated, Limited)
         // TODO: findAlbumsByArtist (Paginated, Limited)
@@ -136,7 +155,8 @@ const implementLimitAndPagination = (cursor, args) => {
     if (args.limit !== 0) {
         return cursor.limit(args.limit)
     } else if (args.page !== 0 && args.pageLimit !== 0) {
-        return cursor.skip((args.page - 1) * args.pageLimit).limit(args.pageLimit)
+        let toSkip = (args.page - 1) * args.pageLimit
+        return cursor.skip(toSkip >= 0? toSkip:0).limit(args.pageLimit)
     } else {
         return cursor
     }
